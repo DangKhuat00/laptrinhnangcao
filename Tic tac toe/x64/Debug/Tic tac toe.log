@@ -1,3 +1,2 @@
-﻿  Board.cpp
-SDL2main.lib(SDL_windows_main.obj) : error LNK2019: unresolved external symbol SDL_main referenced in function main_getcmdline
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\x64\Debug\Tic tac toe.exe : fatal error LNK1120: 1 unresolved externals
+﻿  main.cpp
+  Tic tac toe.vcxproj -> C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\x64\Debug\Tic tac toe.exe
