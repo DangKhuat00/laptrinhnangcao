@@ -3,12 +3,13 @@
 #define BOARD_H
 
 #include <SDL.h>
+//khoi tao doi tuong Board
 
 class Board
 {
 public:
     Board(int posX, int posY, int width, int height, int rows, int cols);
-    void draw(SDL_Renderer* renderer);
+    void draw(SDL_Renderer* renderer);//ve bang len renderer
 
 private:
     int mPosX;
