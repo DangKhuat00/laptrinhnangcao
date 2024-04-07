@@ -1,217 +1,153 @@
-﻿/*This source code copyrighted by Lazy Foo' Productions 2004-2024
-and may not be redistributed without written permission.*/
-
-//Using SDL, standard IO, and strings
-#include <SDL.h>
+﻿#include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <string>
+#include "Board.h"
+#include "LTexture.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_HEIGHT = 575;
 
 //Starts up SDL and creates window
 bool init();
 
 //Loads media
-bool loadMedia();
+bool loadMedia(SDL_Renderer* renderer, LTexture& boardTexture);
 
 //Frees media and shuts down SDL
-void close();
-
-//Loads individual image
-SDL_Surface* loadSurface(std::string path);
-
-//The window we'll be rendering to
-SDL_Window* gWindow = NULL;
-
-//The surface contained by the window
-SDL_Surface* gScreenSurface = NULL;
-
-//Current displayed image
-SDL_Surface* gStretchedSurface = NULL;
-SDL_Surface* gobject1 = NULL;
-SDL_Surface* gobject2 = NULL;
-
-bool init()
-{
-	//Initialization flag
-	bool success = true;
-
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
-		success = false;
-	}
-	else
-	{
-		//Create window
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (gWindow == NULL)
-		{
-			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
-			success = false;
-		}
-		else
-		{
-			//Get window surface
-			gScreenSurface = SDL_GetWindowSurface(gWindow);
-		}
-	}
-
-	return success;
-}
-
-bool loadMedia()
-{
-	//Loading success flag
-	bool success = true;
-
-	//Load stretching surface
-	gStretchedSurface = loadSurface("img/Board.bmp");
-	if (gStretchedSurface == NULL)
-	{
-		printf("Failed to load stretching image!\n");
-		success = false;
-	}
-
-	gobject1 = loadSurface("img/X.bmp");
-	if (gobject1 == NULL)
-	{
-		success = false;
-	}
-	else
-	{
-		SDL_Rect destRect1 = { 100, 100, 0, 0 }; // Vị trí hiển thị cho hình ảnh X
-		SDL_BlitSurface(gobject1, NULL, gScreenSurface, &destRect1);
-	}
-
-	gobject2 = loadSurface("img/O.bmp");
-	if (gobject2 == NULL)
-	{
-		success = false;
-	}
-	else
-	{
-		SDL_Rect destRect2 = { 300, 300, 0, 0 }; // Vị trí hiển thị cho hình ảnh O
-		SDL_BlitSurface(gobject2, NULL, gScreenSurface, &destRect2);
-	}
-
-	return success;
-}
-
-
-void close()
-{
-	//Free loaded image
-	SDL_FreeSurface(gStretchedSurface);
-	gStretchedSurface = NULL;
-
-	//Destroy window
-	SDL_DestroyWindow(gWindow);
-	gWindow = NULL;
-
-	//Quit SDL subsystems
-	SDL_Quit();
-}
-
-SDL_Surface* loadSurface(std::string path)
-{
-	//The final optimized image
-	SDL_Surface* optimizedSurface = NULL;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = SDL_LoadBMP(path.c_str());
-	if (loadedSurface == NULL)
-	{
-		printf("Unable to load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-	}
-	else
-	{
-		//Convert surface to screen format
-		optimizedSurface = SDL_ConvertSurface(loadedSurface, gScreenSurface->format, 0);
-		if (optimizedSurface == NULL)
-		{
-			printf("Unable to optimize image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-		}
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface(loadedSurface);
-	}
-
-	return optimizedSurface;
-}
+void close(SDL_Window* window, SDL_Renderer* renderer);
 
 int main(int argc, char* args[])
 {
-	//Start up SDL and create window
-	if (!init())
-	{
-		printf("Failed to initialize!\n");
-	}
-	else
-	{
-		//Load media
-		if (!loadMedia())
-		{
-			printf("Failed to load media!\n");
-		}
-		else
-		{
-			//Main loop flag
-			bool quit = false;
+    //The window we'll be rendering to
+    SDL_Window* gWindow = nullptr;
 
-			//Event handler
-			SDL_Event e;
+    //The window renderer
+    SDL_Renderer* gRenderer = nullptr;
 
-			//While application is running
-			while (!quit)
-			{
-				//Handle events on queue
-				while (SDL_PollEvent(&e) != 0)
-				{
-					//User requests quit
-					if (e.type == SDL_QUIT)
-					{
-						quit = true;
-					}
-				}
+    //Start up SDL and create window
+    if (!init())
+    {
+        printf("Failed to initialize!\n");
+    }
+    else
+    {
+        //Create window
+        gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        if (gWindow == nullptr)
+        {
+            printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
+        }
+        else
+        {
+            //Create renderer for window
+            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            if (gRenderer == nullptr)
+            {
+                printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+            }
+            else
+            {
+                //Initialize renderer color
+                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-				// Clear the screen
-				SDL_FillRect(gScreenSurface, NULL, SDL_MapRGB(gScreenSurface->format, 0, 0, 0));
+                //Initialize PNG loading
+                int imgFlags = IMG_INIT_PNG;
+                if (!(IMG_Init(imgFlags) & imgFlags))
+                {
+                    printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+                }
+                else
+                {
+                    //Create texture
+                    LTexture gBoardTexture;
 
-				//Apply the image stretched
-				SDL_Rect stretchRect;
-				stretchRect.x = 0;
-				stretchRect.y = 0;
-				stretchRect.w = SCREEN_WIDTH;
-				stretchRect.h = SCREEN_HEIGHT;
-				SDL_BlitScaled(gStretchedSurface, NULL, gScreenSurface, &stretchRect);
+                    //Load media
+                    if (!loadMedia(gRenderer, gBoardTexture))
+                    {
+                        printf("Failed to load media!\n");
+                    }
+                    else
+                    {
+                        //Main loop flag
+                        bool quit = false;
 
-				// Vẽ hình ảnh X và O lên gStretchedSurface
-				SDL_Rect destRect1 = { 100, 100, 0, 0 }; // Vị trí hiển thị cho hình ảnh X
-				SDL_Rect destRect2 = { 300, 300, 0, 0 }; // Vị trí hiển thị cho hình ảnh O
+                        //Event handler
+                        SDL_Event e;
 
-				// Kiểm tra hình ảnh X và O đã được tải thành công không trước khi vẽ
-				if (gobject1 != NULL && gobject2 != NULL) {
-					SDL_BlitSurface(gobject1, NULL, gStretchedSurface, &destRect1);
-					SDL_BlitSurface(gobject2, NULL, gStretchedSurface, &destRect2);
-				}
-				else {
-					printf("Failed to load X or O image!\n");
-				}
+                        //While application is running
+                        while (!quit)
+                        {
+                            //Handle events on queue
+                            while (SDL_PollEvent(&e) != 0)
+                            {
+                                //User requests quit
+                                if (e.type == SDL_QUIT)
+                                {
+                                    quit = true;
+                                }
+                            }
 
-				//Update the surface
-				SDL_UpdateWindowSurface(gWindow);
-			}
+                            //Clear screen
+                            SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                            SDL_RenderClear(gRenderer);
 
+                            //Render board texture to screen
+                            gBoardTexture.render(0, 0);
 
-		}
-	}
+                            //Update screen
+                            SDL_RenderPresent(gRenderer);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	//Free resources and close SDL
-	close();
+    //Free resources and close SDL
+    close(gWindow, gRenderer);
 
-	return 0;
+    return 0;
+}
+
+bool init()
+{
+    //Initialization flag
+    bool success = true;
+
+    //Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+        success = false;
+    }
+
+    return success;
+}
+
+bool loadMedia(SDL_Renderer* renderer, LTexture& boardTexture)
+{
+    //Loading success flag
+    bool success = true;
+
+    //Load board texture
+    if (!boardTexture.loadFromFile(renderer, "img/Board1.png"))
+    {
+        printf("Failed to load board texture image!\n");
+        success = false;
+    }
+
+    return success;
+}
+
+void close(SDL_Window* window, SDL_Renderer* renderer)
+{
+    //Destroy window
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+
+    //Quit SDL subsystems
+    IMG_Quit();
+    SDL_Quit();
 }
