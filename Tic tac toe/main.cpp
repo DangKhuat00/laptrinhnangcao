@@ -4,6 +4,7 @@
 #include <string>
 #include "Board.h"
 #include "LTexture.h"
+#include "mouse.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -72,9 +73,13 @@ int main(int argc, char* args[])
                     {
                         //Main loop flag
                         bool quit = false;
+                        char currentPlayerSymbol = 'X'; // Set current player symbol to 'X'
 
                         //Event handler
                         SDL_Event e;
+
+                        // Create the board
+                        Board board(50, 50, 300, 300, 3, 3);
 
                         //While application is running
                         while (!quit)
@@ -87,6 +92,8 @@ int main(int argc, char* args[])
                                 {
                                     quit = true;
                                 }
+                                // Handle mouse click event
+                                Mouse::handleMouseClick(e, board, currentPlayerSymbol);
                             }
 
                             //Clear screen

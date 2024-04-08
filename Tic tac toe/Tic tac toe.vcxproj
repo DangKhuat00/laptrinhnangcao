@@ -22,9 +22,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="LTexture.cpp" />
+    <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
+    <ClInclude Include="Mouse.h" />
     <ClInclude Include="LTexture.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
