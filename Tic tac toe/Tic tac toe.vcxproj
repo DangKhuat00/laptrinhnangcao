@@ -19,16 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="LTexture.cpp" />
-    <ClCompile Include="Mouse.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="CheckWin.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="LTexture.h" />
+    <ClInclude Include="CheckWin.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
