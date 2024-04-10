@@ -2,15 +2,15 @@
 #define BOARD_H
 
 #include <SDL.h>
-const int SCREEN_WIDTH = 300;
-const int SCREEN_HEIGHT = 300;
-const int CELL_SIZE = SCREEN_WIDTH / 3; // Giả sử kích thước ô bằng 1/3 kích thước màn hình
+
+const int CELL_SIZE = 100; // Kích thước của mỗi ô
 
 enum class Player { None, X, O };
 
 class Board {
 public:
     Board(SDL_Renderer* renderer);
+    Board() = default; // Thêm hàm tạo mặc định
     void draw();
     void placeMarker(int row, int col, Player player);
     Player checkWin();

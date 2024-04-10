@@ -1,32 +1,7 @@
 ﻿#include "Board.h"
-#include <SDL_image.h>
-#include <iostream>
 
 Board::Board(SDL_Renderer* renderer) : renderer(renderer) {
-    SDL_Surface* boardSurface = IMG_Load("board.png");
-    if (!boardSurface) {
-        std::cerr << "Failed to load board.png" << std::endl;
-        exit(1);
-    }
-    boardTexture = SDL_CreateTextureFromSurface(renderer, boardSurface);
-    SDL_FreeSurface(boardSurface);
-
-    SDL_Surface* xSurface = IMG_Load("X.png");
-    if (!xSurface) {
-        std::cerr << "Failed to load X.png" << std::endl;
-        exit(1);
-    }
-    xTexture = SDL_CreateTextureFromSurface(renderer, xSurface);
-    SDL_FreeSurface(xSurface);
-
-    SDL_Surface* oSurface = IMG_Load("O.png");
-    if (!oSurface) {
-        std::cerr << "Failed to load O.png" << std::endl;
-        exit(1);
-    }
-    oTexture = SDL_CreateTextureFromSurface(renderer, oSurface);
-    SDL_FreeSurface(oSurface);
-
+    // Khởi tạo tất cả các ô trống
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             board[i][j] = Player::None;
@@ -35,22 +10,24 @@ Board::Board(SDL_Renderer* renderer) : renderer(renderer) {
 }
 
 void Board::draw() {
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderCopy(renderer, boardTexture, NULL, NULL);
+    // Vẽ bảng Tic Tac Toe
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    for (int i = 1; i < BOARD_SIZE; ++i) {
+        SDL_RenderDrawLine(renderer, i * CELL_SIZE, 0, i * CELL_SIZE, CELL_SIZE * BOARD_SIZE);
+        SDL_RenderDrawLine(renderer, 0, i * CELL_SIZE, CELL_SIZE * BOARD_SIZE, i * CELL_SIZE);
+    }
 
+    // Vẽ các đánh dấu X và O
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (board[i][j] == Player::X) {
-                SDL_Rect destRect = { j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE };
-                SDL_RenderCopy(renderer, xTexture, NULL, &destRect);
+                // Vẽ X
             }
             else if (board[i][j] == Player::O) {
-                SDL_Rect destRect = { j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE };
-                SDL_RenderCopy(renderer, oTexture, NULL, &destRect);
+                // Vẽ O
             }
         }
     }
-    SDL_RenderPresent(renderer);
 }
 
 void Board::placeMarker(int row, int col, Player player) {
@@ -69,6 +46,7 @@ Player Board::checkWin() {
             return board[0][i];
         }
     }
+
     // Kiểm tra đường chéo
     if (board[0][0] != Player::None && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
         return board[0][0];
@@ -76,6 +54,7 @@ Player Board::checkWin() {
     if (board[0][2] != Player::None && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
         return board[0][2];
     }
+
     // Kiểm tra hòa
     bool draw = true;
     for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -87,7 +66,8 @@ Player Board::checkWin() {
         }
     }
     if (draw) {
-        return Player::None;
+        return Player::Draw;
     }
+
     return Player::None;
 }

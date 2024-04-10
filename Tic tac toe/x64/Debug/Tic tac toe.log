@@ -1,11 +1,7 @@
 ﻿  Board.cpp
-  CheckWin.cpp
-  main.cpp
+C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Board.cpp(69,24): error C2838: 'Draw': illegal qualified name in member declaration
+C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Board.cpp(69,28): error C2065: 'Draw': undeclared identifier
   Window.cpp
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Window.cpp(4,11): error C2374: 'SCREEN_WIDTH': redefinition; multiple initialization
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Board.h(5): message : see declaration of 'SCREEN_WIDTH'
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Window.cpp(5,11): error C2374: 'SCREEN_HEIGHT': redefinition; multiple initialization
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Board.h(6): message : see declaration of 'SCREEN_HEIGHT'
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Window.cpp(7,18): error C2512: 'Board': no appropriate default constructor available
-C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Board.h(11,7): message : see declaration of 'Board'
+C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Window.cpp(71,32): error C2838: 'Draw': illegal qualified name in member declaration
+C:\Users\adminnn\OneDrive\Desktop\ltnc\Tic tac toe\Tic tac toe\Window.cpp(71,36): error C2065: 'Draw': undeclared identifier
   Generating Code...
