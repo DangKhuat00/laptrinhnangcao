@@ -1,11 +1,12 @@
 ﻿#include "Window.h"
 #include <iostream>
-
+#include<SDL_image.h>
 const int SCREEN_WIDTH = 300;
 const int SCREEN_HEIGHT = 300;
 
 Window::Window() {
     SDL_Init(SDL_INIT_VIDEO);
+    IMG_Init(IMG_INIT_PNG);
     window = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     board = Board(renderer);
@@ -16,6 +17,7 @@ Window::Window() {
 Window::~Window() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
 }
 
@@ -47,7 +49,7 @@ void Window::handleEvents() {
             }
             Player winner = board.checkWin();
             if (winner != Player::None) {
-                displayWinner(winner);
+                displayWinner(winner); // Hiển thị người chiến thắng
             }
         }
     }
@@ -61,44 +63,27 @@ void Window::render() {
 }
 
 void Window::displayWinner(Player winner) {
-    std::string imagePath;
+    SDL_Surface* surface;
     if (winner == Player::X) {
-        imagePath = "img/Xwin.png";
+        surface = IMG_Load("img/Xwin.png");
     }
     else if (winner == Player::O) {
-        imagePath = "img/Owin.png";
-    }
-    else if (winner == Player::Draw) {
-        imagePath = "img/Draw.png";
+        surface = IMG_Load("img/Owin.png");
     }
     else {
-        std::cerr << "Invalid winner" << std::endl;
-        return;
+        surface = IMG_Load("img/Draw.png");
     }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
 
-    // Load hình ảnh
-    SDL_Texture* texture = loadTexture(imagePath);
-    if (texture == nullptr) {
-        std::cerr << "Failed to load image: " << imagePath << std::endl;
-        return;
-    }
-
-    // Hiển thị hình ảnh
     SDL_Rect destRect;
     SDL_QueryTexture(texture, nullptr, nullptr, &destRect.w, &destRect.h);
     destRect.x = (SCREEN_WIDTH - destRect.w) / 2;
     destRect.y = (SCREEN_HEIGHT - destRect.h) / 2;
+
     SDL_RenderCopy(renderer, texture, nullptr, &destRect);
     SDL_RenderPresent(renderer);
-}
 
-SDL_Texture* Window::loadTexture(const std::string& path) {
-    SDL_Surface* surface = IMG_Load(path.c_str());
-    if (surface == nullptr) {
-        std::cerr << "Failed to load image: " << path << std::endl;
-        return nullptr;
-    }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-    return texture;
+    SDL_Delay(2000); // Chờ 2 giây trước khi thoát
+    running = false;
 }

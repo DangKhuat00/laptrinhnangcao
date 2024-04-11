@@ -1,4 +1,3 @@
-#pragma once
 #ifndef CHECKWIN_H
 #define CHECKWIN_H
 
