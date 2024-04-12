@@ -3,25 +3,25 @@
 
 #include <SDL.h>
 
-const int CELL_SIZE = 100; // Kích thước của mỗi ô
-
+const int BOARD_SIZE = 3;
+const int CELL_SIZE = 100; 
+const int SCREEN_WIDTH = 300;
+const int SCREEN_HEIGHT = 300;
+// Định nghĩa enum cho người chơi và chế độ chơi
 enum class Player { None, X, O };
+enum class GameMode { None, Multiplayer, Solo };
 
-class Board {
-public:
-    Board(SDL_Renderer* renderer);
-    Board() = default; // Thêm hàm tạo mặc định
-    void draw();
-    void placeMarker(int row, int col, Player player);
-    Player checkWin();
+// Biến toàn cục để theo dõi trạng thái của trò chơi
+extern Player board[BOARD_SIZE][BOARD_SIZE];
+extern Player currentPlayer;
+extern GameMode currentMode;
+extern bool running;
+extern bool gameOver;
+void resetBoard();
+bool checkWin();
+bool checkDraw();
+void makeRandomMove();
+void handleMouseClick(int mouseX, int mouseY);
+void handleEvent(SDL_Event& event);
 
-private:
-    static const int BOARD_SIZE = 3;
-    SDL_Texture* boardTexture;
-    SDL_Texture* xTexture;
-    SDL_Texture* oTexture;
-    Player board[BOARD_SIZE][BOARD_SIZE];
-    SDL_Renderer* renderer;
-};
-
-#endif
+#endif // GAME_H

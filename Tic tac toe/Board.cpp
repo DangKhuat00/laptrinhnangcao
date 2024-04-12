@@ -1,32 +1,19 @@
 ﻿#include "Board.h"
-#include <SDL_image.h>
-#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include "texture.h"
+#include "Window.h"
 
-Board::Board(SDL_Renderer* renderer) : renderer(renderer) {
-    SDL_Surface* boardSurface = IMG_Load("img/Board.png");
-    if (!boardSurface) {
-        std::cerr << "Failed to load Board.png" << std::endl;
-        exit(1);
-    }
-    boardTexture = SDL_CreateTextureFromSurface(renderer, boardSurface);
-    SDL_FreeSurface(boardSurface);
 
-    SDL_Surface* xSurface = IMG_Load("img/XX.png");
-    if (!xSurface) {
-        std::cerr << "Failed to load X.png" << std::endl;
-        exit(1);
-    }
-    xTexture = SDL_CreateTextureFromSurface(renderer, xSurface);
-    SDL_FreeSurface(xSurface);
+Player board[BOARD_SIZE][BOARD_SIZE];
+bool running = true;
+Player currentPlayer = Player::X;
+GameMode currentMode = GameMode::None; 
 
-    SDL_Surface* oSurface = IMG_Load("img/OO.png");
-    if (!oSurface) {
-        std::cerr << "Failed to load O.png" << std::endl;
-        exit(1);
-    }
-    oTexture = SDL_CreateTextureFromSurface(renderer, oSurface);
-    SDL_FreeSurface(oSurface);
+bool gameOver = false; 
 
+
+void resetBoard() {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             board[i][j] = Player::None;
@@ -34,60 +21,146 @@ Board::Board(SDL_Renderer* renderer) : renderer(renderer) {
     }
 }
 
-void Board::draw() {
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderCopy(renderer, boardTexture, NULL, NULL);
-
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            if (board[i][j] == Player::X) {
-                SDL_Rect destRect = { j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE };
-                SDL_RenderCopy(renderer, xTexture, NULL, &destRect);
-            }
-            else if (board[i][j] == Player::O) {
-                SDL_Rect destRect = { j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE };
-                SDL_RenderCopy(renderer, oTexture, NULL, &destRect);
-            }
-        }
-    }
-    SDL_RenderPresent(renderer);
-}
-
-void Board::placeMarker(int row, int col, Player player) {
-    if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE && board[row][col] == Player::None) {
-        board[row][col] = player;
-    }
-}
-
-Player Board::checkWin() {
-    // Kiểm tra hàng và cột
+// Kiểm tra xem ai sẽ là người chiến thắng
+bool checkWin() {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         if (board[i][0] != Player::None && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
-            return board[i][0];
+            return true;
         }
         if (board[0][i] != Player::None && board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
-            return board[0][i];
+            return true;
         }
     }
-    // Kiểm tra đường chéo
     if (board[0][0] != Player::None && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-        return board[0][0];
+        return true;
     }
     if (board[0][2] != Player::None && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-        return board[0][2];
+        return true;
     }
-    // Kiểm tra hòa
-    bool draw = true;
+    return false;
+}
+
+// Kiểm tra xem hòa
+bool checkDraw() {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (board[i][j] == Player::None) {
-                draw = false;
-                break;
+                return false; 
             }
         }
     }
-    if (draw) {
-        return Player::None;
+    return true; 
+}
+
+// Xử lý lượt của AI
+void makeRandomMove() {
+    int availableMoves[BOARD_SIZE * BOARD_SIZE][2]; 
+    int count = 0;
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            if (board[i][j] == Player::None) {
+                availableMoves[count][0] = i;
+                availableMoves[count][1] = j;
+                count++;
+            }
+        }
     }
-    return Player::None;
+    if (count > 0) {
+        int randomIndex = rand() % count;
+        int row = availableMoves[randomIndex][0];
+        int col = availableMoves[randomIndex][1];
+        board[row][col] = Player::O;
+    }
+}
+
+// Xử lý sự kiện chuột
+void handleMouseClick(int mouseX, int mouseY) {
+    if (currentMode == GameMode::None) {
+        if (mouseX < SCREEN_WIDTH / 2) {
+            currentMode = GameMode::Multiplayer;
+        }
+        else {
+            currentMode = GameMode::Solo;
+        }
+        return;
+    }
+
+    // Xử lý khi ván chơi đã kết thúc và hiển thị continue.png
+    if (gameOver) {
+        SDL_Rect continueRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+        if (mouseX >= continueRect.x && mouseX <= continueRect.x + continueRect.w &&
+            mouseY >= continueRect.y && mouseY <= continueRect.y + continueRect.h) {
+            // Người chơi đã nhấp chuột vào hình ảnh continue.png
+            gameOver = false; 
+            currentMode = GameMode::None; 
+            resetBoard(); 
+        }
+        return;
+    }
+
+    // Xử lý trò chơi bình thường khi đã chọn chế độ
+    int row = mouseY / CELL_SIZE;
+    int col = mouseX / CELL_SIZE;
+
+    if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE && board[row][col] == Player::None) {
+        board[row][col] = currentPlayer;
+
+        // Kiểm tra chiến thắng và hòa
+        if (checkWin()) {
+            if (currentPlayer == Player::X) {
+                std::cout << "Player X wins!" << std::endl;
+                SDL_RenderCopy(renderer, xWinTexture, NULL, NULL);
+                SDL_RenderPresent(renderer);
+                SDL_Delay(2000);
+                gameOver = true;
+            }
+            else {
+                std::cout << "Player O wins!" << std::endl;
+                SDL_RenderCopy(renderer, oWinTexture, NULL, NULL);
+                SDL_RenderPresent(renderer);
+                SDL_Delay(2000);
+                gameOver = true;
+            }
+        }
+        else if (checkDraw()) {
+            std::cout << "Draw!" << std::endl;
+            SDL_RenderCopy(renderer, drawTexture, NULL, NULL);
+            SDL_RenderPresent(renderer);
+            SDL_Delay(2000);
+            gameOver = true;
+        }
+        else {
+            currentPlayer = (currentPlayer == Player::X) ? Player::O : Player::X;
+            if (currentMode == GameMode::Solo && currentPlayer == Player::O) {
+                makeRandomMove();
+                currentPlayer = Player::X;
+                if (checkWin()) {
+                    std::cout << "Player O wins!" << std::endl;
+                    SDL_RenderCopy(renderer, oWinTexture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000);
+                    gameOver = true;
+                }
+                else if (checkDraw()) {
+                    std::cout << "Draw!" << std::endl;
+                    SDL_RenderCopy(renderer, drawTexture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000);
+                    gameOver = true;
+                }
+            }
+        }
+    }
+}
+
+// Xử lý sự kiện
+void handleEvent(SDL_Event& event) {
+    if (event.type == SDL_QUIT) {
+        running = false;
+    }
+    else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        handleMouseClick(mouseX, mouseY);
+    }
 }
