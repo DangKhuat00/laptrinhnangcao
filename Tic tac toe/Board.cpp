@@ -4,7 +4,7 @@
 #include "texture.h"
 #include "Window.h"
 
-
+// tao bang, kiem tra thang thua, xu li luot choi
 Player board[BOARD_SIZE][BOARD_SIZE];
 bool running = true;
 Player currentPlayer = Player::X;

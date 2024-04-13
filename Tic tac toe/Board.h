@@ -4,9 +4,9 @@
 #include <SDL.h>
 
 const int BOARD_SIZE = 3;
-const int CELL_SIZE = 100; 
-const int SCREEN_WIDTH = 300;
-const int SCREEN_HEIGHT = 300;
+const int CELL_SIZE = 200; 
+const int SCREEN_WIDTH = 600;
+const int SCREEN_HEIGHT = 600;
 // Định nghĩa enum cho người chơi và chế độ chơi
 enum class Player { None, X, O };
 enum class GameMode { None, Multiplayer, Solo };

@@ -1,5 +1,6 @@
 ﻿#include "texture.h"
 #include "Board.h"
+// quan li hinh anh
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
@@ -98,4 +99,12 @@ void loadTextures() {
     menuTexture = SDL_CreateTextureFromSurface(renderer, menuSurface);
     SDL_FreeSurface(menuSurface);
 
- 
+    SDL_Surface* continueSurface = IMG_Load("img/continue.png");
+    if (!continueSurface) {
+        std::cerr << "Failed to load continue.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    continueTexture = SDL_CreateTextureFromSurface(renderer, continueSurface);
+    SDL_FreeSurface(continueSurface);
+}

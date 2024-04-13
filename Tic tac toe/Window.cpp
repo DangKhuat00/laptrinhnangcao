@@ -1,7 +1,7 @@
 ﻿#include "Window.h"
 #include "texture.h"
 #include "Board.h"
-
+// ve bang, menu, man hinh ket thuc
 void drawBoard() {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(renderer);
