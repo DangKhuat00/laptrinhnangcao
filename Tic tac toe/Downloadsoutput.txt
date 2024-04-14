@@ -1,0 +1,237 @@
+/*
+#include "Window.h"
+
+int main(int argc, char* args[]) {
+    Window window;
+    window.run();
+    return 0;
+}
+*/
+#include <SDL.h>
+#include <SDL_image.h>
+#include <iostream>
+#include <string>
+
+const int SCREEN_WIDTH = 300;
+const int SCREEN_HEIGHT = 300;
+const int BOARD_SIZE = 3;
+const int CELL_SIZE = SCREEN_WIDTH / BOARD_SIZE;
+
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+
+enum class Player { None, X, O };
+Player board[BOARD_SIZE][BOARD_SIZE];
+
+bool running = true;
+Player currentPlayer = Player::X;
+
+SDL_Texture* boardTexture = NULL;
+SDL_Texture* xTexture = NULL;
+SDL_Texture* oTexture = NULL;
+SDL_Texture* xWinTexture = NULL;
+SDL_Texture* oWinTexture = NULL;
+**SDL_Texture* drawTexture = NULL; // Thêm biến texture cho ảnh hòa
+
+void initSDL() {
+    SDL_Init(SDL_INIT_VIDEO);
+    IMG_Init(IMG_INIT_PNG);
+    window = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+void closeSDL() {
+    SDL_DestroyTexture(boardTexture);
+    SDL_DestroyTexture(xTexture);
+    SDL_DestroyTexture(oTexture);
+    SDL_DestroyTexture(xWinTexture);
+    SDL_DestroyTexture(oWinTexture);
+   ** SDL_DestroyTexture(drawTexture); // Giải phóng drawTexture
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    IMG_Quit();
+    SDL_Quit();
+}
+
+void loadTextures() {
+    SDL_Surface* boardSurface = IMG_Load("img/Board.png");
+    if (!boardSurface) {
+        std::cerr << "Failed to load board.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    boardTexture = SDL_CreateTextureFromSurface(renderer, boardSurface);
+    SDL_FreeSurface(boardSurface);
+
+    SDL_Surface* xSurface = IMG_Load("img/XX.png");
+    if (!xSurface) {
+        std::cerr << "Failed to load X.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    xTexture = SDL_CreateTextureFromSurface(renderer, xSurface);
+    SDL_FreeSurface(xSurface);
+
+    SDL_Surface* oSurface = IMG_Load("img/OO.png");
+    if (!oSurface) {
+        std::cerr << "Failed to load O.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    oTexture = SDL_CreateTextureFromSurface(renderer, oSurface);
+    SDL_FreeSurface(oSurface);
+
+    SDL_Surface* xWinSurface = IMG_Load("img/endx1.png");
+    if (!xWinSurface) {
+        std::cerr << "Failed to load Xwin.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    xWinTexture = SDL_CreateTextureFromSurface(renderer, xWinSurface);
+    SDL_FreeSurface(xWinSurface);
+
+    SDL_Surface* oWinSurface = IMG_Load("img/endo1.png");
+    if (!oWinSurface) {
+        std::cerr << "Failed to load Owin.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    oWinTexture = SDL_CreateTextureFromSurface(renderer, oWinSurface);
+    SDL_FreeSurface(oWinSurface);
+
+    // Tải ảnh hòa
+   ** SDL_Surface* drawSurface = IMG_Load("img/Draw.png");
+    if (!drawSurface) {
+        std::cerr << "Failed to load draw.png" << std::endl;
+        closeSDL();
+        exit(1);
+    }
+    drawTexture = SDL_CreateTextureFromSurface(renderer, drawSurface);
+    SDL_FreeSurface(drawSurface);
+}
+
+void resetBoard() {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            board[i][j] = Player::None;
+        }
+    }
+}
+
+
+void drawBoard() {
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(renderer);
+
+    // Vẽ bảng Tic Tac Toe
+    SDL_Rect destRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+    SDL_RenderCopy(renderer, boardTexture, NULL, &destRect);
+
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            if (board[i][j] == Player::X) {
+                SDL_Rect destRect = { j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                SDL_RenderCopy(renderer, xTexture, NULL, &destRect);
+            }
+            else if (board[i][j] == Player::O) {
+                SDL_Rect destRect = { j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE };
+                SDL_RenderCopy(renderer, oTexture, NULL, &destRect);
+            }
+        }
+    }
+
+    SDL_RenderPresent(renderer);
+}
+
+bool checkWin() {
+    // Kiểm tra hàng và cột
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        if (board[i][0] != Player::None && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+            return true;
+        }
+        if (board[0][i] != Player::None && board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
+            return true;
+        }
+    }
+    // Kiểm tra đường chéo
+    if (board[0][0] != Player::None && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+        return true;
+    }
+    if (board[0][2] != Player::None && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+        return true;
+    }
+    return false;
+}
+
+bool checkDraw() {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            if (board[i][j] == Player::None) {
+                return false; // Còn ô trống
+            }
+        }
+    }
+    return true; // Không còn ô trống, hòa
+}
+
+void handleEvent(SDL_Event& event) {
+    if (event.type == SDL_QUIT) {
+        running = false;
+    }
+    else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        int row = mouseY / CELL_SIZE;
+        int col = mouseX / CELL_SIZE;
+        if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE && board[row][col] == Player::None) {
+            board[row][col] = currentPlayer;
+            if (checkWin()) {
+                // Xử lý khi có người chiến thắng
+                if (currentPlayer == Player::X) {
+                    std::cout << "Player X wins!" << std::endl;
+                    SDL_RenderCopy(renderer, xWinTexture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000);
+                }
+                else {
+                    std::cout << "Player O wins!" << std::endl;
+                    SDL_RenderCopy(renderer, oWinTexture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000);
+                }
+                running = false;
+            }
+            else if (checkDraw()) {
+                // Xử lý trường hợp hòa
+                std::cout << "Draw!" << std::endl;
+                SDL_RenderCopy(renderer, drawTexture, NULL, NULL);
+                SDL_RenderPresent(renderer);
+                SDL_Delay(2000);
+                running = false;
+            }
+            else {
+                // Đổi lượt chơi
+                currentPlayer = (currentPlayer == Player::X) ? Player::O : Player::X;
+            }
+        }
+    }
+}
+
+int main(int argc, char* args[]) {
+    initSDL();
+    loadTextures();
+    resetBoard();
+
+    SDL_Event event;
+    while (running) {
+        while (SDL_PollEvent(&event) != 0) {
+            handleEvent(event);
+        }
+        drawBoard();
+    }
+
+    closeSDL();
+    return 0;
+}
+
+

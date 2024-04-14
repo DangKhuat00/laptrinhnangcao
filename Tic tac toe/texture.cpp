@@ -46,7 +46,7 @@ void loadTextures() {
     }
     boardTexture = SDL_CreateTextureFromSurface(renderer, boardSurface);
     SDL_FreeSurface(boardSurface);
-    SDL_Surface* xSurface = IMG_Load("img/XX.png");
+    SDL_Surface* xSurface = IMG_Load("img/X.png");
     if (!xSurface) {
         std::cerr << "Failed to load X.png" << std::endl;
         closeSDL();
@@ -55,7 +55,7 @@ void loadTextures() {
     xTexture = SDL_CreateTextureFromSurface(renderer, xSurface);
     SDL_FreeSurface(xSurface);
 
-    SDL_Surface* oSurface = IMG_Load("img/OO.png");
+    SDL_Surface* oSurface = IMG_Load("img/O.png");
     if (!oSurface) {
         std::cerr << "Failed to load O.png" << std::endl;
         closeSDL();
@@ -63,7 +63,7 @@ void loadTextures() {
     }
     oTexture = SDL_CreateTextureFromSurface(renderer, oSurface);
     SDL_FreeSurface(oSurface);
-    SDL_Surface* xWinSurface = IMG_Load("img/endx1.png");
+    SDL_Surface* xWinSurface = IMG_Load("img/EndX.png");
     if (!xWinSurface) {
         std::cerr << "Failed to load endx1.png" << std::endl;
         closeSDL();
@@ -72,7 +72,7 @@ void loadTextures() {
     xWinTexture = SDL_CreateTextureFromSurface(renderer, xWinSurface);
     SDL_FreeSurface(xWinSurface);
 
-    SDL_Surface* oWinSurface = IMG_Load("img/endo1.png");
+    SDL_Surface* oWinSurface = IMG_Load("img/EndO.png");
     if (!oWinSurface) {
         std::cerr << "Failed to load endo1.png" << std::endl;
         closeSDL();
@@ -99,7 +99,7 @@ void loadTextures() {
     menuTexture = SDL_CreateTextureFromSurface(renderer, menuSurface);
     SDL_FreeSurface(menuSurface);
 
-    SDL_Surface* continueSurface = IMG_Load("img/continue.png");
+    SDL_Surface* continueSurface = IMG_Load("img/Replay.png");
     if (!continueSurface) {
         std::cerr << "Failed to load continue.png" << std::endl;
         closeSDL();

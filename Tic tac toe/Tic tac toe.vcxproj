@@ -89,8 +89,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\adminnn\OneDrive\Desktop\vclib\include;C:\Users\adminnn\OneDrive\Desktop\SDL2_image-devel-2.8.2-VC.zip\SDL2_image-2.8.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\adminnn\OneDrive\Desktop\vclib\lib\x64;C:\Users\adminnn\OneDrive\Desktop\SDL2_image-devel-2.8.2-VC.zip\SDL2_image-2.8.2\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\adminnn\OneDrive\Desktop\New folder\vclib\include;C:\Users\adminnn\OneDrive\Desktop\SDL2_image-devel-2.8.2-VC.zip\SDL2_image-2.8.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\adminnn\OneDrive\Desktop\New folder\vclib\lib\x64;C:\Users\adminnn\OneDrive\Desktop\SDL2_image-devel-2.8.2-VC.zip\SDL2_image-2.8.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
