@@ -4,7 +4,6 @@
 #include "texture.h"
 #include "Window.h"
 
-// tao bang, kiem tra thang thua, xu li luot choi
 Player board[BOARD_SIZE][BOARD_SIZE];
 bool running = true;
 Player currentPlayer = Player::X;
@@ -21,7 +20,6 @@ void resetBoard() {
     }
 }
 
-// Kiểm tra xem ai sẽ là người chiến thắng
 bool checkWin() {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         if (board[i][0] != Player::None && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
@@ -40,7 +38,6 @@ bool checkWin() {
     return false;
 }
 
-// Kiểm tra xem hòa
 bool checkDraw() {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
@@ -52,7 +49,6 @@ bool checkDraw() {
     return true; 
 }
 
-// Xử lý lượt của AI
 void makeRandomMove() {
     int availableMoves[BOARD_SIZE * BOARD_SIZE][2]; 
     int count = 0;
@@ -73,7 +69,6 @@ void makeRandomMove() {
     }
 }
 
-// Xử lý sự kiện chuột
 void handleMouseClick(int mouseX, int mouseY) {
     if (currentMode == GameMode::None) {
         if (mouseX < SCREEN_WIDTH / 2) {
@@ -85,12 +80,10 @@ void handleMouseClick(int mouseX, int mouseY) {
         return;
     }
 
-    // Xử lý khi ván chơi đã kết thúc và hiển thị continue.png
     if (gameOver) {
         SDL_Rect continueRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
         if (mouseX >= continueRect.x && mouseX <= continueRect.x + continueRect.w &&
             mouseY >= continueRect.y && mouseY <= continueRect.y + continueRect.h) {
-            // Người chơi đã nhấp chuột vào hình ảnh continue.png
             gameOver = false; 
             currentMode = GameMode::None; 
             resetBoard(); 
@@ -98,14 +91,12 @@ void handleMouseClick(int mouseX, int mouseY) {
         return;
     }
 
-    // Xử lý trò chơi bình thường khi đã chọn chế độ
     int row = mouseY / CELL_SIZE;
     int col = mouseX / CELL_SIZE;
 
     if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE && board[row][col] == Player::None) {
         board[row][col] = currentPlayer;
 
-        // Kiểm tra chiến thắng và hòa
         if (checkWin()) {
             if (currentPlayer == Player::X) {
                 std::cout << "Player X wins!" << std::endl;
@@ -153,7 +144,6 @@ void handleMouseClick(int mouseX, int mouseY) {
     }
 }
 
-// Xử lý sự kiện
 void handleEvent(SDL_Event& event) {
     if (event.type == SDL_QUIT) {
         running = false;

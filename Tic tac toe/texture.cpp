@@ -1,6 +1,6 @@
 ﻿#include "texture.h"
 #include "Board.h"
-// quan li hinh anh
+
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
@@ -13,7 +13,6 @@ SDL_Texture* drawTexture = NULL;
 SDL_Texture* menuTexture = NULL;
 SDL_Texture* continueTexture = NULL;
 
-// Khởi tạo SDL và IMG
 void initSDL() {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);

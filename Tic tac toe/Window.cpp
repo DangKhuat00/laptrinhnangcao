@@ -1,12 +1,11 @@
 ﻿#include "Window.h"
 #include "texture.h"
 #include "Board.h"
-// ve bang, menu, man hinh ket thuc
+
 void drawBoard() {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(renderer);
 
-    // Vẽ bảng Tic Tac Toe
     SDL_Rect destRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     SDL_RenderCopy(renderer, boardTexture, NULL, &destRect);
     for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -23,6 +22,7 @@ void drawBoard() {
 
     SDL_RenderPresent(renderer);
 }
+ 
 void drawMenu() {
     SDL_Rect destRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     SDL_RenderCopy(renderer, menuTexture, NULL, &destRect);
