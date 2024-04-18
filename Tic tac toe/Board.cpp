@@ -3,7 +3,7 @@
 #include <ctime>
 #include "texture.h"
 #include "Window.h"
-
+#include "sound.h"
 Player board[BOARD_SIZE][BOARD_SIZE];
 bool running = true;
 Player currentPlayer = Player::X;

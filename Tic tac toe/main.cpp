@@ -4,27 +4,17 @@
 #include "Board.h"
 #include "Window.h"
 #include "texture.h"
-#include <iostream>
+#include "sound.h"
 
 int main(int argc, char* args[]) {
     initSDL();
-    // tải âm thanh
-    if (Mix_Init(MIX_INIT_MP3) == 0) {
-        std::cerr << "Failed to initialize SDL_mixer: " << Mix_GetError() << std::endl;
-        return -1;
+    if (!initializeSound()) {
+        return -1; 
     }
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        std::cerr << "Failed to open audio: " << Mix_GetError() << std::endl;
-        return -1;
+    if (!loadMusic("music/Music.mp3")) {
+        return -1; 
     }
-    Mix_Chunk* music = Mix_LoadWAV("music/Music.mp3");
-    if (!music) {
-        std::cerr << "Failed to load music: " << Mix_GetError() << std::endl;
-        return -1;
-    }
-
-    // Phát nhạc và lặp lại vô hạn
-    Mix_PlayChannel(-1, music, -1);
+    playMusic(-1);
     loadTextures();
     while (currentMode == GameMode::None) {
         drawMenu();
@@ -33,7 +23,6 @@ int main(int argc, char* args[]) {
             handleEvent(event);
         }
     }
-    // Khởi động trò chơi
     resetBoard();
     SDL_Event event;
     while (running) {
@@ -47,9 +36,9 @@ int main(int argc, char* args[]) {
             drawBoard();
         }
     }
-    Mix_HaltChannel(-1);
-    Mix_FreeChunk(music);
-    Mix_CloseAudio();
+    stopMusic();
+    freeMusic();
+    closeSound();
     closeSDL();
     return 0;
 }
