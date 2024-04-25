@@ -2,7 +2,7 @@
 - Thử nghiệm game: 
 
 ## 0.GIỚI THIỆU GAME
-- Tic Tac Toe là một trò chơi bảng được  3\*3 9 ô.
+- Tic Tac Toe là một trò chơi bảng được  3\*3  gồm 9 ô.
 - Hai người chơi, một người sử dụng ký hiệu 'O' và người kia sử dụng ký hiệu 'X', thay phiên nhau điền vào các ô bằng ký hiệu của họ.
 
   ![X](https://github.com/DangKhuat00/ltnc/assets/161539819/adf98b0d-4d19-4535-a97d-2ac4dfcd1e37)
@@ -34,9 +34,9 @@
 ![Screenshot 2024-04-24 233738](https://github.com/DangKhuat00/ltnc/assets/161539819/8558eda3-d179-4306-840d-948fbe744116)
 
 
-  * Chế độ người với người: Bạn điền một kí hiệu của mình thì người còn lại sẽ điền kí hiệu còn lại cho đến khi
-có người chiến thắng hoặc là cả 2 cùng hòa.
-  * Chế độ người với máy (solo): Bạn điền một kí hiệu 
+  * Chế độ người với người: Bạn điền một kí hiệu của mình thì người còn lại sẽ điền kí hiệu còn lại cho đến khi ván đấu có kết quả.
+  * Chế độ người với máy (solo): Khi bạn điền một kí hiệu thì ngay lập tức máy sẽ điền kí hiệu 1 còn lại
+và sẽ tiếp tục khi ván đấu có kết quả. 
 
 
 ## 4. Kiểm tra chiến thắng
