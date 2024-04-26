@@ -1,5 +1,5 @@
 #**TIC TAC TOE**
-- Thử nghiệm game: 
+- Thử nghiệm game: https://youtu.be/60h0ipOHDWg
 
 ## 0.GIỚI THIỆU GAME
 - Tic Tac Toe là một trò chơi bảng được  3\*3  gồm 9 ô.
